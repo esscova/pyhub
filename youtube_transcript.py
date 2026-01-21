@@ -3,24 +3,40 @@ Script para extrair transcrições de vídeos do YouTube
 
 Dependências:
   - youtube_transcript_api
+  - typing
 
 """
 
 # DEPENDENCIAS
 from youtube_transcript_api import YouTubeTranscriptApi
 from youtube_transcript_api.formatters import TextFormatter
+from typing import Optional
 
 # FUNÇÃO COLETAR ID DO VIDEO
-def get_video_id(url:str) -> str|None:
-  """
-  Obtém o ID do vídeo a partir de uma URL do YouTube.
-  """
-  if 'youtu.be' in url:
-    return url.split('/')[-1].split('?')[0]
-  elif 'v=' in url:
-    return url.split('v=')[1]
-  else:
-    return None
+def get_video_id(url: str) -> Optional[str]:
+    """
+    Extrai o ID do vídeo de uma URL do YouTube
+
+    Args:
+        url: URL do vídeo do YouTube
+
+    Returns:
+        video_id ou None se inválido
+    """
+    try:
+        if "youtu.be/" in url:
+            video_id = url.split("youtu.be/")[1].split("?")[0].split("&")[0]
+        elif "v=" in url:
+            video_id = url.split("v=")[1].split("&")[0].split("?")[0]
+        else:
+            return None
+
+        if len(video_id) == 11: # id tem 11 carcteres?
+            return video_id
+        return None
+
+    except Exception:
+        return None
 
 # FUNÇÃO COLETAR TRANSCRIÇÃO
 def get_transcript(video_id:str, languages:list[str]=["pt", "pt-BR", "en", "en-US"]) -> str|None:
